@@ -126,3 +126,38 @@ local function phMethod()
         end
     end
 end
+-- random method
+local function getClosestPlayerToCursor()
+   	local closestPlayer = nil
+   	local chance = math.chance(SilentAim["HitChance"])
+	local shortestDistance = math.huge
+	for i, v in pairs(players.GetPlayers(players)) do
+       if v ~= localPlayer and v.Character and v.Character.FindFirstChild(v.Character, "Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character.PrimaryPart ~= nil and v.Character.FindFirstChild(v.Character, "Head") then
+           if SilentAim["VisibleCheck"] and not isPartVisible(v.Character.PrimaryPart) then
+               return (chance and closestPlayer or localPlayer)
+           end
+           if SilentAim["TeamCheck"] then
+               if v.Team ~= localPlayer.Team then      
+                   local pos = currentCamera.WorldToViewportPoint(currentCamera, v.Character.PrimaryPart.Position)
+                   local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(mouse.X, mouse.Y)).magnitude
+                   if magnitude < (SilentAim["FOV"] * 6 - 8) then
+                       if magnitude < shortestDistance then
+                           closestPlayer = v
+                           shortestDistance = magnitude
+                       end
+                   end
+               end
+           else
+               local pos = currentCamera.WorldToViewportPoint(currentCamera, v.Character.PrimaryPart.Position)
+               local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(mouse.X, mouse.Y)).magnitude
+               if magnitude < (SilentAim["FOV"] * 6 - 8) then
+                   if magnitude < shortestDistance then
+                       closestPlayer = v
+                       shortestDistance = magnitude
+                   end
+               end
+           end
+		end
+   end  
+   return (chance and closestPlayer or localPlayer)
+end
